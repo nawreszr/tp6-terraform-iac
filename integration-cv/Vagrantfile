@@ -1,0 +1,41 @@
+ENV['VAGRANT_DEFAULT_PROVIDER'] = 'docker'
+
+Vagrant.configure("2") do |config|
+  config.ssh.insert_key = false
+
+  # --- VM 1 (Port 8001) ---
+  config.vm.define "vm1" do |vm1|
+    vm1.vm.hostname = "vm1"
+    vm1.vm.network "forwarded_port", guest: 8001, host: 8001
+    vm1.vm.provider "docker" do |d|
+      d.build_dir = "vagrant-base"
+      d.has_ssh = true
+      d.create_args = ["--privileged"]
+    end
+    vm1.vm.provision "ansible" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.extra_vars = { 
+        ansible_python_interpreter: "/usr/bin/python3",
+        port_cv: 8001
+      }
+    end
+  end
+
+  # --- VM 2 (Port 8002) ---
+  config.vm.define "vm2" do |vm2|
+    vm2.vm.hostname = "vm2"
+    vm2.vm.network "forwarded_port", guest: 8002, host: 8002
+    vm2.vm.provider "docker" do |d|
+      d.build_dir = "vagrant-base"
+      d.has_ssh = true
+      d.create_args = ["--privileged"]
+    end
+    vm2.vm.provision "ansible" do |ansible|
+      ansible.playbook = "site.yml"
+      ansible.extra_vars = { 
+        ansible_python_interpreter: "/usr/bin/python3",
+        port_cv: 8002
+      }
+    end
+  end
+end

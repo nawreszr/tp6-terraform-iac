@@ -1,0 +1,25 @@
+---
+- name: Créer le dossier d'application
+  ansible.builtin.file:
+    path: /opt/cv
+    state: directory
+    mode: '0755'
+
+- name: Copier le CV et le Dockerfile
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: /opt/cv/
+  loop:
+    - cv/index.html
+    - cv/Dockerfile
+    - main.tf
+
+- name: Initialiser Terraform
+  ansible.builtin.command:
+    cmd: terraform init
+    chdir: /opt/cv
+
+- name: Appliquer Terraform avec le bon port
+  ansible.builtin.command:
+    cmd: terraform apply -auto-approve -var="external_port={{ hostvars[inventory_hostname]['port_cv'] }}"
+    chdir: /opt/cv
