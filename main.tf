@@ -19,6 +19,6 @@ resource "docker_container" "nginx" {
   name  = "nginx_terraform"
   ports {
     internal = 80
-    external = 8001
+    external = var.external_port
   }
 }
