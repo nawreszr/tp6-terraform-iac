@@ -2,3 +2,7 @@
 *.tfstate
 *.tfstate.backup
 *.tfvars
+.terraform/
+*.tfstate
+*.tfstate.*
+.vagrant/
